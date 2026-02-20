@@ -28,16 +28,23 @@ void setup() {
 
     Serial.println("=== MG995 Axis Control Initialized ===");
 }
-
 void loop() {
 
-    // Read analog feedback from potentiometer
     feedbackValue = analogRead(FEEDBACK_PIN);
-
-    // Map ADC (0–1023) to angle (0–180)
     currentAngle = map(feedbackValue, 0, 1023, 0, 180);
 
-    Serial.print("Current Angle: ");
+    // Calculate error
+    error = targetPosition - currentAngle;
+
+    // Simple proportional control
+    if (abs(error) > 2) {    // Deadband of 2 degrees
+        mg995.write(targetPosition);
+    }
+
+    Serial.print("Target: ");
+    Serial.print(targetPosition);
+    Serial.print(" | Current: ");
     Serial.println(currentAngle);
 
+    delay(200);
 }
