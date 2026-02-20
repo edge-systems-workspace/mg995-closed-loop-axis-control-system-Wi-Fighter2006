@@ -13,31 +13,44 @@
  * achieve the desired target angle set through Serial input.
  */
 
-#define SERVO_PIN 9        // PWM control pin for MG995
-#define FEEDBACK_PIN A0    // Analog feedback (potentiometer)
+#define SERVO_PIN 9
+#define FEEDBACK_PIN A0
 
-Servo mg995;               // Servo object
+Servo mg995;
 
-int targetPosition = 90;   // Desired angle
-int feedbackValue = 0;     // Raw ADC feedback value
+int targetPosition = 90;
+int feedbackValue = 0;
+int currentAngle = 0;
+int error = 0;
 
 void setup() {
 
-    Serial.begin(9600);          // Start Serial monitor
-    mg995.attach(SERVO_PIN);     // Attach servo to pin
+    Serial.begin(9600);
+    mg995.attach(SERVO_PIN);
 
-    Serial.println("=== MG995 Axis Control Initialized ===");
+    Serial.println("=== MG995 Closed Loop Axis Control System Ready ===");
+    Serial.println("Enter target angle (0–180): ");
 }
+
 void loop() {
 
+    // Read target position from Serial
+    if (Serial.available() > 0) {
+        targetPosition = Serial.parseInt();
+        targetPosition = constrain(targetPosition, 0, 180);
+        Serial.print("New Target Set: ");
+        Serial.println(targetPosition);
+    }
+
+    // Read feedback
     feedbackValue = analogRead(FEEDBACK_PIN);
     currentAngle = map(feedbackValue, 0, 1023, 0, 180);
 
-    // Calculate error
+    // Compute error
     error = targetPosition - currentAngle;
 
-    // Simple proportional control
-    if (abs(error) > 2) {    // Deadband of 2 degrees
+    // Closed-loop correction
+    if (abs(error) > 2) {
         mg995.write(targetPosition);
     }
 
