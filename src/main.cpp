@@ -22,11 +22,12 @@ int targetPosition = 90;   // Desired angle
 int feedbackValue = 0;     // Raw ADC feedback value
 
 void setup() {
+
+    Serial.begin(9600);          // Start Serial monitor
+    mg995.attach(SERVO_PIN);     // Attach servo to pin
+
+    Serial.println("=== MG995 Axis Control Initialized ===");
 }
 
 void loop() {
-}
-
-void loop() {
-// write your code here
 }
