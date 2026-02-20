@@ -30,4 +30,14 @@ void setup() {
 }
 
 void loop() {
+
+    // Read analog feedback from potentiometer
+    feedbackValue = analogRead(FEEDBACK_PIN);
+
+    // Map ADC (0–1023) to angle (0–180)
+    currentAngle = map(feedbackValue, 0, 1023, 0, 180);
+
+    Serial.print("Current Angle: ");
+    Serial.println(currentAngle);
+
 }
